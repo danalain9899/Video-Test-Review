@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>On Manga Explainer 140s</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Patrick+Hand&family=VT323&display=block">
+<style>
+  :root { --bg:#d9d6cf; --ink:#111; --bar:#fbfaf6; --red:#e0261b; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#17161a; --ink:#f2efe8; --bar:#222127; } }
+  * { box-sizing: border-box; }
+  html, body { margin:0; height:100%; background:var(--bg); color:var(--ink); font:16px/1.4 system-ui, sans-serif; }
+  #app { display:flex; flex-direction:column; height:100%; }
+  #stage { flex:1; min-height:0; display:flex; align-items:center; justify-content:center; background:#000; }
+  canvas { display:block; height:100%; max-width:100%; aspect-ratio:9/16; object-fit:contain; }
+  #bar { display:flex; align-items:center; gap:12px; padding:10px 16px; background:var(--bar); border-top:3px solid var(--ink); }
+  button { font:inherit; font-weight:700; min-width:44px; min-height:44px; padding:0 14px; border:3px solid var(--ink); background:var(--bar); color:var(--ink); cursor:pointer; }
+  button[aria-pressed="true"] { background:var(--red); color:#fff; }
+  #scrub { flex:1; min-width:0; accent-color:var(--red); height:44px; }
+  #time { font-variant-numeric: tabular-nums; min-width:92px; text-align:right; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="stage"><canvas id="cv" width="1080" height="1920"></canvas></div>
+  <div id="bar">
+    <button id="play" aria-label="Play">▶</button>
+    <input id="scrub" type="range" min="0" max="1000" value="0" aria-label="Scrub">
+    <span id="time">0.0 / 141.5</span>
+    <button id="snd" aria-pressed="true" aria-label="Sound">🔊</button>
+    <button id="loop" aria-pressed="true" aria-label="Loop">↻</button>
+  </div>
+</div>
+<script>
+/*__HARNESS__*/
+</script>
+<script>
+/*__SOUND__*/
+</script>
+<script>
+(function () {
+'use strict';
+/*__HELPERS__*/
+/*__STORY__*/
+
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d', { willReadFrequently: true });
+window.DURATION = DURATION;
+const VO = new Audio('data:audio/mpeg;base64,/*__VO__*/'); VO.preload = 'auto';
+window.scoreSound = scoreSound;
+window.explainer = explainer;
+const FONTS = ['400 64px "Archivo Black"', '400 26px "Patrick Hand"', '400 30px "VT323"'];
+let cur = 0, playing = false, t0wall = 0, tStart = 0, stopSound = null, loop = true, soundOn = true, ready = false, raf = 0;
+const $ = (id) => document.getElementById(id);
+function frame(t) {
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.filter = 'none';
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  explainer(ctx, SW, SH, t);
+}
+function ui() { $('scrub').value = Math.round(cur / DURATION * 1000); $('time').textContent = cur.toFixed(1) + ' / ' + DURATION.toFixed(1); }
+window.seek = (t) => { cur = Math.max(0, Math.min(DURATION, t)); if (ready) { frame(cur); } ui(); };
+function killSound() { if (stopSound) { try { stopSound(); } catch (e) {} stopSound = null; } try { VO.pause(); } catch (e) {} }
+function startSound() { killSound(); if (soundOn && playing) { stopSound = SOUND.live(scoreSound, cur, { voiceover: true }); try { VO.currentTime = cur; VO.play(); } catch (e) {} } }
+function play() { if (!ready) return; if (cur >= DURATION - 0.01) cur = 0; playing = true; tStart = cur; t0wall = performance.now(); $('play').textContent = '❚❚'; startSound(); raf = requestAnimationFrame(tick); }
+function pause() { playing = false; $('play').textContent = '▶'; killSound(); cancelAnimationFrame(raf); }
+function tick(now) {
+  if (!playing) return;
+  let t = tStart + (now - t0wall) / 1000;
+  if (t >= DURATION) { if (loop) { cur = 0; tStart = 0; t0wall = now; killSound(); startSound(); t = 0; } else { cur = DURATION; frame(cur); ui(); pause(); return; } }
+  cur = t; frame(cur); ui(); raf = requestAnimationFrame(tick);
+}
+$('play').onclick = () => (playing ? pause() : play());
+$('scrub').oninput = (e) => { const was = playing; if (playing) { playing = false; killSound(); cancelAnimationFrame(raf); } cur = e.target.value / 1000 * DURATION; frame(cur); ui(); if (was) play(); };
+$('snd').onclick = (e) => { soundOn = !soundOn; e.currentTarget.setAttribute('aria-pressed', soundOn); e.currentTarget.textContent = soundOn ? '🔊' : '🔇'; if (soundOn) startSound(); else killSound(); };
+$('loop').onclick = (e) => { loop = !loop; e.currentTarget.setAttribute('aria-pressed', loop); };
+(async () => {
+  try { await Promise.all(FONTS.map((f) => document.fonts.load(f, 'AaZz09ドン'))); await document.fonts.ready; } catch (e) {}
+  ready = true; frame(cur === 0 ? 3.7 : cur); ui(); window.__ready = true;
+})();
+})();
+</script>
+</body>
+</html>
