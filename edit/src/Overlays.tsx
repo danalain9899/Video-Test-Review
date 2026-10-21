@@ -100,10 +100,10 @@ export const Hook: React.FC<{dur: number}> = ({dur}) => {
   return (
     <AbsoluteFill style={{opacity: out}}>
       <AbsoluteFill style={{background: 'linear-gradient(180deg,rgba(0,0,0,.65),rgba(0,0,0,.05) 45%,rgba(0,0,0,.55))'}} />
-      <div style={{position: 'absolute', top: 120, left: 0, width: W, textAlign: 'center', fontFamily: FONT, textTransform: 'uppercase'}}>
+      <div style={{position: 'absolute', top: 84, left: 0, width: W, textAlign: 'center', fontFamily: FONT, textTransform: 'uppercase'}}>
         {line(0, 'Kenapa kita lebih nampak', C.white, 64)}
         {line(1, 'Kegagalan', C.red, 150)}
-        {line(2, 'bukan kejayaan?', C.gold, 84)}
+        {line(2, 'bukan kejayaan?', C.gold, 76)}
       </div>
     </AbsoluteFill>
   );

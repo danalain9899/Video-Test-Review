@@ -17,7 +17,7 @@ const find = (tok: string, after = hookEnd, afterTok?: string): number => {
   return w.s;
 };
 
-const tArt = find('art'), tPertama = find('pertama'), tMusnah = find('musnahkan'), tVia = find('via'), tMaks = find('maksudnya'),
+const tArt = find('art'), tPertama = find('pertama'), tMusnah = find('memusnahkan'), tVia = find('via'), tMaks = find('maksudnya'),
   tRider = find('penunggang'), tSesiapa = find('sesiapa'), tTipu = find('tipu'), tLast = find('last'), tSenarai = find('senarai'),
   tBerfikir = find('berfikir', tSenarai), tMeletih = find('meletihkan');
 
