@@ -1,6 +1,6 @@
 // B-roll bergerak (motion graphics) untuk setiap point. Semua dianimasi dengan frame, tiada aset luar.
 import React from 'react';
-import {AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig, Easing} from 'remotion';
+import {AbsoluteFill, Img, staticFile, interpolate, spring, useCurrentFrame, useVideoConfig, Easing} from 'remotion';
 import {C, FONT, W, H} from './theme';
 
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
@@ -162,6 +162,21 @@ export const SceneEnergy: React.FC<{dur: number}> = ({dur}) => {
         <rect x={262} y={586} width={508 * lvl} height={248} rx={26} fill={col} />
       </svg>
       <Label t="Berfikir itu penat" sub="simpan tenaga untuk keputusan besar" color={col} y={1010} delay={10} />
+    </Backdrop>
+  );
+};
+
+// 0) Buku: potongan sebenar dari rakaman (sudah un-mirror), Ken Burns + kad membulat
+export const SceneBook: React.FC<{dur: number}> = ({dur}) => {
+  const f = useCurrentFrame(); const {fps} = useVideoConfig();
+  const p = spring({frame: f, fps, config: {damping: 13}});
+  const z = interpolate(f, [0, dur], [1, 1.1], clamp);
+  return (
+    <Backdrop dur={dur} tint={C.gold}>
+      <div style={{position: 'absolute', top: 430, left: 46, width: 980, height: 653, borderRadius: 36, overflow: 'hidden', border: `5px solid ${C.gold}`, boxShadow: '0 40px 100px rgba(0,0,0,.7)', transform: `scale(${0.7 + 0.3 * p}) rotate(${(1 - p) * -5}deg)`}}>
+        <Img src={staticFile('book.jpg')} style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${z})`}} />
+      </div>
+      <Label t="ROLF DOBELLI" sub="Epilogue & Bab 1" color={C.gold} y={1220} delay={10} />
     </Backdrop>
   );
 };

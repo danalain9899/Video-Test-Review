@@ -4,11 +4,11 @@ import {FPS, W, H, sec, C} from './theme';
 import cuts from '../public/cuts.json';
 import words from '../public/words.json';
 import {plan, SceneName} from './plan';
-import {Captions, ProgressBar, ChapterChip, LowerThird, BookCard, Hook, Flash, Word} from './Overlays';
-import {SceneThreat, SceneVia, SceneRider, SceneInfluence, SceneChecklist, SceneEnergy} from './Scenes';
+import {Captions, ProgressBar, ChapterChip, LowerThird, Hook, Flash, Word} from './Overlays';
+import {SceneBook, SceneThreat, SceneVia, SceneRider, SceneInfluence, SceneChecklist, SceneEnergy} from './Scenes';
 
 const SCENES: Record<SceneName, React.FC<{dur: number}>> = {
-  threat: SceneThreat, via: SceneVia, rider: SceneRider, influence: SceneInfluence, checklist: SceneChecklist, energy: SceneEnergy,
+  book: SceneBook, threat: SceneThreat, via: SceneVia, rider: SceneRider, influence: SceneInfluence, checklist: SceneChecklist, energy: SceneEnergy,
 };
 const ZOOMS = [1.0, 1.12, 1.0, 1.2, 1.06, 1.15];
 const sfx = (n: string) => staticFile(`sfx/${n}.wav`);
@@ -80,7 +80,6 @@ export const Main: React.FC = () => {
       {plan.lowerThirds.map((c, i) => (
         <Sequence key={i} from={sec(c.at)} durationInFrames={sec(c.dur)}><LowerThird title={c.title} sub={c.sub} dur={sec(c.dur)} /></Sequence>
       ))}
-      {plan.book && <Sequence from={sec(plan.book.at)} durationInFrames={sec(plan.book.dur)}><BookCard dur={sec(plan.book.dur)} /></Sequence>}
 
       <Captions words={words as Word[]} hideRanges={cutRanges} />
       {plan.flashes.map((a, i) => <Sequence key={i} from={sec(a)} durationInFrames={10}><Flash /></Sequence>)}
