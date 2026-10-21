@@ -76,7 +76,7 @@ fc = (f"[0:v]select='{sel}',setpts=N/FRAME_RATE/TB,hflip,{grade},split[g1][g2];"
       "acompressor=threshold=-20dB:ratio=3.2:attack=8:release=140:makeup=4,"
       "loudnorm=I=-14:TP=-1.5:LRA=9[aout]")
 cmd = ["ffmpeg", "-v", "error", "-stats", "-y", "-i", SRC, "-i", mp, "-filter_complex", fc, "-map", "[vout]", "-map", "[aout]",
-       "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-r", "30", "-c:a", "aac", "-b:a", "192k", "-shortest", OUT]
+       "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-r", "30", "-c:a", "aac", "-b:a", "192k", "-t", f"{t:.3f}", OUT]
 n = len(segs)
 subprocess.run(cmd, check=True)
 json.dump({"joints": joints, "duration": round(t, 3), "hookSegs": n_hook,
