@@ -76,6 +76,19 @@ def build_content(content) -> str:
         title = f'<div class="ctitle">{_esc(content["title"])}</div>' if content.get("title") else ""
         return f'<div class="card">{title}<div class="dial">{segs}</div>{cap}{_notes(content)}</div>'
 
+    if t == "biases":
+        rows = ""
+        for i in content["items"]:
+            rows += (f'<div class="row"><div class="num">{_esc(i["num"])}</div><div>'
+                     f'<div class="rname">{_esc(i["name"])}</div>'
+                     f'<div class="rfact">{_esc(i.get("fact",""))}</div>'
+                     f'<div class="rline">{_esc(i["line"])}</div>'
+                     f'<div class="rtip"><b>MARKETING</b>{_esc(i["tip"])}</div></div></div>')
+        return f'<div class="rows">{rows}</div>'
+
+    if t == "cta":
+        return f'<div class="ctabox">{_esc(content["text"])}<br><em>{_esc(content["accent"])}</em></div>'
+
     if t == "chips":
         chips = "".join(f'<span class="chip">{_esc(c)}</span>' for c in content["items"])
         return f'<div class="chips">{chips}</div>'
@@ -113,7 +126,7 @@ def _slide_html(template: str, slide: dict, plan: dict) -> str:
     bg_uri = _data_uri(Path(bg)) if bg and Path(bg).exists() else ""
     repl = {
         "__BG__": bg_uri,
-        "__STAGECLASS__": "hero" if slide.get("layout") == "hero" else "",
+        "__STAGECLASS__": " ".join("s-"+w for w in slide.get("layout", "").split()),
         "__TOPIC_TAG__": _esc(slide.get("topic_tag", "")),
         "__BRAND_LABEL__": _esc(plan.get("brand_label", "")),
         "__HEADLINE__": _esc(slide.get("headline", "")),
@@ -175,7 +188,9 @@ def render(run_dir):
 
     slides = plan["slides"]
     with sync_playwright() as p:
-        browser = p.chromium.launch()
+        import os
+        _exe = os.getenv("CHROMIUM_PATH")
+        browser = p.chromium.launch(executable_path=_exe) if _exe else p.chromium.launch()
         page = browser.new_page(
             viewport={"width": cfg.CANVAS_W, "height": cfg.CANVAS_H},
             device_scale_factor=cfg.RENDER_SCALE,
