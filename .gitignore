@@ -1,0 +1,4 @@
+.env
+carousel/runs/*
+!carousel/runs/README.txt
+__pycache__/
